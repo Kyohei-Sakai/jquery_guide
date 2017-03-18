@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<html lang="ja">
+    <title>jQueryの練習</title>
+    <style>
+        .btn {
+            display: inline-block;
+            width: 100px;
+            padding: 7px;
+            border-radius: 5px;
+            box-shadow: 0 4px 0 #0088cc;
+            color: #fff;
+            background: #00aaff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <p>ユーザ認証</p>
+    <p>あなたの名前とパスワードを入力してください</p>
+    <p>
+        <a>Name </a><input type="text" name="name" id="name">
+        <a>Pass </a><input type="text" name="pass" id="pass"><br>
+        <input type="button" id="check" class="btn" value="認証">
+    </p>
+    <div id="result"></div>
+    <ol id="list">
+        <p>認証履歴</p>
+    </ol>
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script>
+        // $(document).ready(function() {
+        $(function() {
+            $('p:first').css('color', 'red').css('background', 'gold').css('font-size', '32px');
+
+            $('#check')
+                .mouseover(function(){
+                    $(this).css('font-size', '30px');
+                })
+                .mouseout(function(){
+                    $(this).css('font-size', '11px');
+                });
+
+            $('#name, #pass')
+                .focus(function() {
+                    // console.log($(this).css('font-size'));
+                    $(this).css('font-size', '30px');
+                })
+                .blur(function() {
+                    $(this).css('font-size', '11px');
+                });
+
+
+
+
+            // buttonがクリックされた時
+            // 入力された名前が登録されているか検証する
+            $('#check').click(function() {
+
+                // 空のフィールドがあればエラーメッセージを表示
+                if ($('#name').val() == "" || $('#pass').val() == "") {
+                    $('#result').text('どちらかが入力されていません');
+                } else {
+
+                    var li = $('<li>').text($('#name').val() + ' : ' + $('#pass').val());
+                    $('ol').append(li);
+                    // li.prependTo($('ol'));
+
+                    // どちらも入力されている場合
+                    $.get('users.php', {
+                        // val()は現在の値を取得する
+                        name: $('#name').val(),
+                        pass: $('#pass').val()
+                    }, function(data) {
+                        if (data.type == 'json') {
+                            // dataがjsonの場合
+                            $('#result').html('有効期限：' + data.limit);
+                        } else {
+                            // dataがerror messageの場合
+                            $('#result').html('Errer: ' + data.message);
+                        }
+                    });
+                }
+
+            });
+
+
+        });
+    </script>
+</body>
+</html>
